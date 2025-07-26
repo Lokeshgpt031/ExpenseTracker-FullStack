@@ -1,0 +1,256 @@
+@API_HostAddress = http://localhost:5168
+# Make sure the API project is running on this port.
+# If not, update the port to match the running API instance.
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJKb2huIERvZSIsImVtYWlsIjoiam9obi5kb2VAZXhhbXBsZS5jb20iLCJyb2xlIjoiRGFpbHlFYXJuZXIiLCJwcm9mZXNzaW9uIjoiU29mdHdhcmUgRGV2ZWxvcGVyIiwibmJmIjoxNzUzNTA5MTcxLCJleHAiOjE3NTM1MTI3NzEsImlhdCI6MTc1MzUwOTE3MSwiaXNzIjoiRWFybmluZ1RyYWNrZXJBcGkiLCJhdWQiOiJFYXJuaW5nVHJhY2tlckFwcCJ9.H84Wi0OP5IAG9TC_F9R4CxMRqaxNsWs7tRUu7zt2KQQ
+
+###############################################################################
+# AUTH CONTROLLER
+###############################################################################
+
+### Register new user
+POST {{API_HostAddress}}/api/Auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890",
+  "password": "SecurePassword123!",
+  "profession": "Software Developer"
+}
+
+### Login user
+POST {{API_HostAddress}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123!"
+}
+
+### Get current user profile
+GET {{API_HostAddress}}/api/Auth/me
+Authorization: Bearer {{token}}
+
+### Update current user profile
+PUT {{API_HostAddress}}/api/Auth/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "John Updated Doe",
+  "phoneNumber": "+1234567891",
+  "profession": "Senior Software Developer"
+}
+
+### Change password
+POST {{API_HostAddress}}/api/Auth/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "SecurePassword123!",
+  "newPassword": "NewSecurePassword456!"
+}
+
+###############################################################################
+# EXPENSES CONTROLLER
+###############################################################################
+
+### Get all expenses (with optional date filters)
+GET {{API_HostAddress}}/api/Expenses
+Authorization: Bearer {{token}}
+
+### Get expenses with date filter
+GET {{API_HostAddress}}/api/Expenses?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Bearer {{token}}
+
+### Get specific expense by ID
+GET {{API_HostAddress}}/api/Expenses/1
+Authorization: Bearer {{token}}
+
+### Create new expense
+POST {{API_HostAddress}}/api/Expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26T10:30:00",
+  "amount": 150.50,
+  "category": "LPG",
+  "paymentMethod": "Cash"
+}
+
+### Create expense with different category and payment method
+POST {{API_HostAddress}}/api/Expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26T14:20:00",
+  "amount": 2500.00,
+  "category": "Petrol",
+  "paymentMethod": "UPI"
+}
+
+### Update existing expense
+PUT {{API_HostAddress}}/api/Expenses/4
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26T10:30:00",
+  "amount": 175.75,
+  "category": "LPG",
+  "paymentMethod": "Card"
+}
+
+### Delete expense
+DELETE {{API_HostAddress}}/api/Expenses/1
+Authorization: Bearer {{token}}
+
+###############################################################################
+# EARNINGS CONTROLLER
+###############################################################################
+
+### Get all earnings (with optional date filters)
+GET {{API_HostAddress}}/api/Earnings
+Authorization: Bearer {{token}}
+
+### Get earnings with date filter
+GET {{API_HostAddress}}/api/Earnings?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Bearer {{token}}
+
+### Get specific earning by ID
+GET {{API_HostAddress}}/api/Earnings/1
+Authorization: Bearer {{token}}
+
+### Get valid earning sources
+GET {{API_HostAddress}}/api/Earnings/sources
+Authorization: Bearer {{token}}
+
+### Create new earning
+POST {{API_HostAddress}}/api/Earnings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26T09:00:00",
+  "amount": 5000.00,
+  "sourceId": 1,
+  "type": "Regular",
+  "paymentMethod": "UPI"
+}
+
+### Create earning with different type and payment method
+POST {{API_HostAddress}}/api/Earnings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26T15:30:00",
+  "amount": 1500.00,
+  "sourceId": 2,
+  "type": "Bonus",
+  "paymentMethod": "Card"
+}
+
+### Update existing earning
+PUT {{API_HostAddress}}/api/Earnings/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2025-01-26T09:00:00",
+  "amount": 5500.00,
+  "sourceId": 1,
+  "type": "Regular",
+  "paymentMethod": "UPI"
+}
+
+### Delete earning
+DELETE {{API_HostAddress}}/api/Earnings/1
+Authorization: Bearer {{token}}
+
+###############################################################################
+# ANALYTICS CONTROLLER
+###############################################################################
+
+### Get analytics overview
+GET {{API_HostAddress}}/api/Analytics/overview
+Authorization: Bearer {{token}}
+
+### Get analytics overview with date filter
+GET {{API_HostAddress}}/api/Analytics/overview?startDate=2025-01-01&endDate=2025-12-31
+Authorization: Bearer {{token}}
+
+### Get daily summary (last 30 days by default)
+GET {{API_HostAddress}}/api/Analytics/daily-summary
+Authorization: Bearer {{token}}
+
+### Get daily summary with custom date range
+GET {{API_HostAddress}}/api/Analytics/daily-summary?startDate=2025-01-01&endDate=2025-01-31
+Authorization: Bearer {{token}}
+
+### Get weekly trends (last 12 weeks by default)
+GET {{API_HostAddress}}/api/Analytics/weekly-trends
+Authorization: Bearer {{token}}
+
+### Get weekly trends for specific number of weeks
+GET {{API_HostAddress}}/api/Analytics/weekly-trends?weeks=8
+Authorization: Bearer {{token}}
+
+### Get monthly trends (last 12 months by default)
+GET {{API_HostAddress}}/api/Analytics/monthly-trends
+Authorization: Bearer {{token}}
+
+### Get monthly trends for specific number of months
+GET {{API_HostAddress}}/api/Analytics/monthly-trends?months=6
+Authorization: Bearer {{token}}
+
+###############################################################################
+# USER CONTROLLER (Admin Features)
+###############################################################################
+
+### Get all users (Admin only)
+GET {{API_HostAddress}}/api/User
+Authorization: Bearer {{token}}
+
+### Get specific user by ID
+GET {{API_HostAddress}}/api/User/1
+Authorization: Bearer {{token}}
+
+### Delete user (Admin only)
+DELETE {{API_HostAddress}}/api/User/1
+Authorization: Bearer {{token}}
+
+###############################################################################
+# NOTES & ENUM VALUES
+###############################################################################
+
+# Expense Categories:
+# - LPG
+# - Groceries
+# - Transportation
+# - Entertainment
+# - Healthcare
+# - Education
+# - Shopping
+# - Bills
+# - Other
+
+# Earning Types:
+# - Regular
+# - Bonus
+# - Overtime
+# - Commission
+# - Other
+
+# Payment Methods:
+# - Cash
+# - Card
+# - UPI
+# - NetBanking
+# - Other
+
+###
