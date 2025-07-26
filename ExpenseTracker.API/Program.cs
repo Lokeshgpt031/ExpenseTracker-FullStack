@@ -53,11 +53,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy
+            .AllowAnyOrigin()    // Allow any origin
+            .AllowAnyMethod()    // Allow any HTTP method (GET, POST, etc.)
+            .AllowAnyHeader();   // Allow any header
     });
 });
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -111,6 +113,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
 app.UseAuthentication(); // Add this before UseAuthorization
 app.UseAuthorization();
 app.MapControllers();

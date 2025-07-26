@@ -1,0 +1,9 @@
+{
+    "/api": {
+      "target": "https://7095-firebase-expensetracker-1753512117356.cluster-ys234awlzbhwoxmkkse6qo3fz6.cloudworkstations.dev/",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
+  

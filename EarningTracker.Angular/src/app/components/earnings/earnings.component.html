@@ -1,0 +1,254 @@
+<div class="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header with Add Button -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            Earning Management
+          </h1>
+          <p class="text-gray-600 text-sm sm:text-base">
+            Track and manage your income sources
+          </p>
+        </div>
+        
+        <!-- FIXED: Add Button with proper click handler -->
+        <button 
+          type="button"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg flex items-center space-x-2 w-full sm:w-auto justify-center transition-colors"
+          (click)="openAddDialog()">
+          <i class="pi pi-plus"></i>
+          <span>Add Earning</span>
+        </button>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="mb-6">
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-green-700 font-medium text-sm sm:text-base mb-1">Total Earnings</p>
+              <p class="text-2xl sm:text-3xl font-bold text-green-800">
+                ${{ getTotalEarnings().toFixed(2) }}
+              </p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+              <i class="pi pi-arrow-up text-green-600 text-xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings List -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center p-4 border-b border-gray-200">
+          <i class="pi pi-list text-gray-600 mr-3"></i>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-800">Your Earnings</h2>
+          <span class="ml-3 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            {{ earnings.length }}
+          </span>
+        </div>
+
+        <div class="p-4">
+          <!-- Loading State -->
+          <div *ngIf="loading" class="space-y-4">
+            <div *ngFor="let item of [1,2,3,4,5]" 
+                 class="flex items-center justify-between p-4 bg-gray-50 rounded-lg animate-pulse">
+              <div class="flex-1">
+                <div class="h-4 bg-gray-300 rounded mb-2"></div>
+                <div class="h-3 bg-gray-300 rounded w-3/5"></div>
+              </div>
+              <div class="h-6 bg-gray-300 rounded w-20"></div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!loading && earnings.length === 0" 
+               class="text-center py-12">
+            <div class="mb-4">
+              <i class="pi pi-wallet text-gray-400 text-4xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No earnings yet</h3>
+            <p class="text-gray-500 mb-6">Start tracking your income by adding your first earning</p>
+            <button 
+              type="button"
+              class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
+              (click)="openAddDialog()">
+              <i class="pi pi-plus"></i>
+              <span>Add Your First Earning</span>
+            </button>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div *ngIf="!loading && earnings.length > 0" class="space-y-4">
+            <div *ngFor="let earning of earnings" 
+                 class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex-1">
+                  <h3 class="font-semibold text-gray-900 text-base mb-1">
+                    {{ earning.description }}
+                  </h3>
+                  <p class="text-sm text-gray-500">{{ formatDate(earning.date) }}</p>
+                </div>
+                <button 
+                  type="button"
+                  class="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50"
+                  (click)="confirmDelete(earning)">
+                  <i class="pi pi-trash"></i>
+                </button>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      [ngClass]="getSourceClasses(earning.source)">
+                  {{ earning.source }}
+                </span>
+                <span class="text-xl font-bold text-green-600">
+                  ${{ earning.amount.toFixed(2) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Add Earning Modal Dialog -->
+<div *ngIf="showAddDialog" 
+class="fixed inset-0 z-50 overflow-y-auto"
+style="background-color: rgba(0, 0, 0, 0.5);"
+(click)="closeDialogOnBackdrop($event)">
+
+<div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+
+<!-- Modal panel -->
+<div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+    style="margin-top: 3rem; margin-bottom: 3rem;">
+ 
+ <!-- Header -->
+ <div class="bg-white px-6 pt-6 pb-4">
+   <div class="flex items-center justify-between mb-4">
+     <h3 class="text-xl font-semibold text-gray-900">
+       Add New Earning
+     </h3>
+     <button 
+       type="button"
+       class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
+       (click)="closeAddDialog()">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+       </svg>
+     </button>
+   </div>
+
+   <!-- Form -->
+   <form (ngSubmit)="addEarning()" #earningForm="ngForm" class="space-y-4">
+     <!-- Amount Field -->
+     <div>
+       <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
+         Amount *
+       </label>
+       <div class="relative">
+         <span class="absolute left-3 top-2 text-gray-500">$</span>
+         <input 
+           type="number"
+           id="amount"
+           [(ngModel)]="newEarning.amount"
+           name="amount"
+           step="0.01"
+           min="0.01"
+           placeholder="0.00"
+           class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base"
+           required>
+       </div>
+     </div>
+
+     <!-- Description Field -->
+     <div>
+       <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+         Description *
+       </label>
+       <input 
+         type="text"
+         id="description"
+         [(ngModel)]="newEarning.description"
+         name="description"
+         placeholder="e.g., Monthly salary, Freelance project"
+         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base"
+         required>
+     </div>
+
+     <!-- Source Field -->
+     <div>
+       <label for="source" class="block text-sm font-medium text-gray-700 mb-2">
+         Source *
+       </label>
+       <select 
+         id="source"
+         [(ngModel)]="newEarning.source"
+         name="source"
+         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base bg-white"
+         required>
+         <option value="">Select income source</option>
+         <option value="Salary">💼 Salary</option>
+         <option value="Freelance">💻 Freelance</option>
+         <option value="Investment">📈 Investment</option>
+         <option value="Business">🏢 Business</option>
+         <option value="Rental">🏠 Rental</option>
+         <option value="Gift">🎁 Gift</option>
+         <option value="Other">📦 Other</option>
+       </select>
+     </div>
+
+     <!-- Date Field -->
+     <div>
+       <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+         Date *
+       </label>
+       <input 
+         type="date"
+         id="date"
+         [(ngModel)]="newEarning.date"
+         name="date"
+         [max]="todayString"
+         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base"
+         required>
+     </div>
+
+     <!-- Form Actions -->
+     <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200 mt-6">
+       <button 
+         type="submit"
+         [disabled]="!earningForm.form.valid || isSubmitting"
+         class="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 text-base">
+         <svg *ngIf="!isSubmitting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+         </svg>
+         <div *ngIf="isSubmitting" class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+         <span>{{ isSubmitting ? 'Adding...' : 'Add Earning' }}</span>
+       </button>
+       <button 
+         type="button"
+         (click)="closeAddDialog()"
+         class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors text-base">
+         Cancel
+       </button>
+     </div>
+   </form>
+ </div>
+</div>
+</div>
+</div>
+
+  <!-- Toast Messages (if you want to show success/error messages) -->
+  <div *ngIf="showToast" 
+       class="fixed top-4 right-4 z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-lg"
+       [@fadeInOut]>
+    <div class="flex items-center">
+      <i class="pi pi-check-circle mr-2"></i>
+      <span>{{ toastMessage }}</span>
+      <button (click)="showToast = false" class="ml-4 text-green-700 hover:text-green-900">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </div>
